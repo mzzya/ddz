@@ -1,0 +1,4 @@
+output.elasticsearch:
+  hosts: ["elasticsearch:9300"]
+setup.kibana:
+  host: "<kibana_url>"
