@@ -26,8 +26,8 @@ func Inject(handler func(err error)) {
 	closedErrorHandler = handler
 }
 
-// Add 添加关闭事件 level 等级越低越先关闭
-func Add(level int, event func() (errs []error)) {
+// CloserAdd 添加关闭事件 level 等级越低越先关闭
+func CloserAdd(level int, event func() (errs []error)) {
 	m.Lock()
 	closeEvents[level] = event
 	m.Unlock()

@@ -102,7 +102,7 @@ func Init(v *viper.Viper) {
 	// {"level":"info","ts":1584886046.821289,"caller":"log/log_test.go:37","msg":"Info log"}
 	//  375200             10199 ns/op              22 B/op          0 allocs/op 	4s
 	// Logger, _ = zap.NewProduction()
-	util.Add(100, Close)
+	util.CloserAdd(100, Closer)
 }
 
 // KafkaLogger .
@@ -131,8 +131,8 @@ func (m *KafkaLogger) Write(p []byte) (n int, err error) {
 	return
 }
 
-// Close .
-func Close() (errs []error) {
+// Closer .
+func Closer() (errs []error) {
 	errs = make([]error, 0, 2)
 	if err := Logger.Sync(); err != nil {
 		errs = append(errs, errors.WithMessage(err, "logger sync"))

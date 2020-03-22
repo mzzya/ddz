@@ -1,15 +1,24 @@
 package tracer
 
 import (
+	"io"
 	"os"
 
+	"github.com/hellojqk/simple_api/pkg/logger"
+	"github.com/hellojqk/simple_api/pkg/util"
+	"github.com/opentracing/opentracing-go"
 	"github.com/spf13/viper"
+	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
+	"github.com/uber/jaeger-lib/metrics/prometheus"
+	"go.uber.org/zap"
 )
 
 var (
 	//enable 是否启用Opentracing
-	enable bool
+	enable       bool
+	tracer       opentracing.Tracer
+	tracerCloser io.Closer
 )
 
 const (
@@ -33,16 +42,25 @@ const (
 	envAgentPort              = "JAEGER_AGENT_PORT"
 )
 
-// Enable 启用链路跟踪
-func Enable(v *viper.Viper) {
+// Init 启用链路跟踪
+func Init(v *viper.Viper) {
 	enable = v.GetBool("OPENTRACING_ENABLE")
 	if !enable {
 		return
 	}
 	cfg, err := ConfigFromViper(v)
 	if err != nil {
-
+		logger.Logger.Error("tracer enable from viper", zap.Error(err))
 	}
+	options := make([]config.Option, 0, 3)
+	options = append(options, config.Logger(jaeger.StdLogger))
+	options = append(options, config.Metrics(prometheus.New()))
+	tracer, tracerCloser, err = cfg.NewTracer(options...)
+	if err != nil {
+		logger.Logger.Error("tracer enable create", zap.Error(err))
+	}
+	opentracing.SetGlobalTracer(tracer)
+	util.CloserAdd(99, Closer)
 }
 
 // ConfigFromViper 从viper中获取配置信息
@@ -65,5 +83,14 @@ func ConfigFromViper(v *viper.Viper) (c *config.Configuration, err error) {
 	os.Setenv(envAgentHost, v.GetString(envAgentHost))
 	os.Setenv(envAgentPort, v.GetString(envAgentPort))
 	c, err = config.FromEnv()
+	return
+}
+
+// Closer .
+func Closer() (errs []error) {
+	errs = make([]error, 0)
+	if err := tracerCloser.Close(); err != nil {
+		errs = append(errs, err)
+	}
 	return
 }
