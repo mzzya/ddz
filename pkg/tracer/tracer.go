@@ -15,13 +15,14 @@ import (
 )
 
 var (
-	//enable 是否启用Opentracing
-	enable       bool
+	//Enable 是否启用Opentracing
+	Enable       bool
 	tracer       opentracing.Tracer
 	tracerCloser io.Closer
 )
 
 const (
+	confOpentracingEnable = "OPENTRACING_ENABLE"
 	// environment variable names
 	envServiceName            = "JAEGER_SERVICE_NAME"
 	envDisabled               = "JAEGER_DISABLED"
@@ -44,8 +45,8 @@ const (
 
 // Init 启用链路跟踪
 func Init(v *viper.Viper) {
-	enable = v.GetBool("OPENTRACING_ENABLE")
-	if !enable {
+	Enable = v.GetBool(confOpentracingEnable)
+	if !Enable {
 		return
 	}
 	cfg, err := ConfigFromViper(v)
@@ -53,8 +54,11 @@ func Init(v *viper.Viper) {
 		logger.Logger.Error("tracer enable from viper", zap.Error(err))
 	}
 	options := make([]config.Option, 0, 3)
+	os.Stdin.Chmod(os.ModeSetuid)
+	os.Stdout.Chmod(os.ModeSetuid)
 	options = append(options, config.Logger(jaeger.StdLogger))
 	options = append(options, config.Metrics(prometheus.New()))
+	util.PrintJSONWithColor(cfg)
 	tracer, tracerCloser, err = cfg.NewTracer(options...)
 	if err != nil {
 		logger.Logger.Error("tracer enable create", zap.Error(err))
@@ -65,25 +69,34 @@ func Init(v *viper.Viper) {
 
 // ConfigFromViper 从viper中获取配置信息
 func ConfigFromViper(v *viper.Viper) (c *config.Configuration, err error) {
-	os.Setenv(envServiceName, v.GetString(envServiceName))
-	os.Setenv(envDisabled, v.GetString(envDisabled))
-	os.Setenv(envRPCMetrics, v.GetString(envRPCMetrics))
-	os.Setenv(envTags, v.GetString(envTags))
-	os.Setenv(envSamplerType, v.GetString(envSamplerType))
-	os.Setenv(envSamplerParam, v.GetString(envSamplerParam))
-	os.Setenv(envSamplerManagerHostPort, v.GetString(envSamplerManagerHostPort))
-	os.Setenv(envSamplerMaxOperations, v.GetString(envSamplerMaxOperations))
-	os.Setenv(envSamplerRefreshInterval, v.GetString(envSamplerRefreshInterval))
-	os.Setenv(envReporterMaxQueueSize, v.GetString(envReporterMaxQueueSize))
-	os.Setenv(envReporterFlushInterval, v.GetString(envReporterFlushInterval))
-	os.Setenv(envReporterLogSpans, v.GetString(envReporterLogSpans))
-	os.Setenv(envEndpoint, v.GetString(envEndpoint))
-	os.Setenv(envUser, v.GetString(envUser))
-	os.Setenv(envPassword, v.GetString(envPassword))
-	os.Setenv(envAgentHost, v.GetString(envAgentHost))
-	os.Setenv(envAgentPort, v.GetString(envAgentPort))
+	setEnv(envServiceName, v.GetString(envServiceName))
+	setEnv(envDisabled, v.GetString(envDisabled))
+	setEnv(envRPCMetrics, v.GetString(envRPCMetrics))
+	setEnv(envTags, v.GetString(envTags))
+	setEnv(envSamplerType, v.GetString(envSamplerType))
+	setEnv(envSamplerParam, v.GetString(envSamplerParam))
+	setEnv(envSamplerManagerHostPort, v.GetString(envSamplerManagerHostPort))
+	setEnv(envSamplerMaxOperations, v.GetString(envSamplerMaxOperations))
+	setEnv(envSamplerRefreshInterval, v.GetString(envSamplerRefreshInterval))
+	setEnv(envReporterMaxQueueSize, v.GetString(envReporterMaxQueueSize))
+	setEnv(envReporterFlushInterval, v.GetString(envReporterFlushInterval))
+	setEnv(envReporterLogSpans, v.GetString(envReporterLogSpans))
+	setEnv(envEndpoint, v.GetString(envEndpoint))
+	setEnv(envUser, v.GetString(envUser))
+	setEnv(envPassword, v.GetString(envPassword))
+	setEnv(envAgentHost, v.GetString(envAgentHost))
+	setEnv(envAgentPort, v.GetString(envAgentPort))
 	c, err = config.FromEnv()
 	return
+}
+
+//setEnv .
+func setEnv(key string, value string) error {
+	err := os.Setenv(key, value)
+	if err != nil {
+		logger.Logger.Error("setenv", zap.Error(err))
+	}
+	return nil
 }
 
 // Closer .

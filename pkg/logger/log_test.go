@@ -3,19 +3,11 @@ package logger
 import (
 	"testing"
 
-	"github.com/spf13/viper"
+	"github.com/hellojqk/simple_api/pkg/config"
 )
 
 func TestMain(m *testing.M) {
-	v := viper.New()
-	v.SetConfigName("config")
-	v.SetConfigType("yaml")
-	v.AddConfigPath(".")
-	err := v.ReadInConfig()
-	if err != nil {
-		panic(err)
-	}
-	Init(v)
+	Init(config.DefaultViper())
 	m.Run()
 }
 

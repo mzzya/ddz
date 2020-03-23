@@ -2,75 +2,75 @@ version: "3"
 services:
   jaeger:
     container_name: jaeger
-    image: jaegertracing/all-in-one:latest
+    image: jaegertracing/all-in-one:1.17.0
     ports:
       - "6831:6831"
       - "16686:16686"
-  zookeeper:
-    container_name: zookeeper
-    image: wurstmeister/zookeeper
-    ports:
-      - "2181:2181"
-    networks:
-      default:
-  kafka1:
-    container_name: kafka1
-    image: wurstmeister/kafka:2.12-2.4.1
-    ports:
-      - "9092:9092"
-    networks:
-      default:
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
-      KAFKA_LISTENERS: PLAINTEXT://kafka1:9092
-      # KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-  elasticsearch:
-    container_name: elasticsearch
-    image: elasticsearch:7.6.1
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-      discovery.type: single-node
-    networks:
-      default:
-  logstash:
-    container_name: logstash
-    image: logstash:7.6.1
-    ports:
-      - "5044:5044"
-      - "9600:9600"
-    depends_on:
-      - kafka1
-      - elasticsearch
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      default:
-    volumes:
-      - ./logstash-kafka.conf:/usr/share/logstash/pipeline/logstash-kafka.conf
-  kibana:
-    container_name: kibana
-    image: kibana:7.6.1
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-    networks:
-      default:
-    volumes:
-      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
-  # filebeat:
-  #   image: store/elastic/filebeat:7.6.1
-  #   depends_on:
-  #     - elasticsearch
-networks:
-  default:
-    external:
-      name: simple_api
+#   zookeeper:
+#     container_name: zookeeper
+#     image: wurstmeister/zookeeper
+#     ports:
+#       - "2181:2181"
+#     networks:
+#       default:
+#   kafka1:
+#     container_name: kafka1
+#     image: wurstmeister/kafka:2.12-2.4.1
+#     ports:
+#       - "9092:9092"
+#     networks:
+#       default:
+#     depends_on:
+#       - zookeeper
+#     environment:
+#       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
+#       KAFKA_LISTENERS: PLAINTEXT://kafka1:9092
+#       # KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+#       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock
+#   elasticsearch:
+#     container_name: elasticsearch
+#     image: elasticsearch:7.6.1
+#     ports:
+#       - "9200:9200"
+#       - "9300:9300"
+#     environment:
+#       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+#       discovery.type: single-node
+#     networks:
+#       default:
+#   logstash:
+#     container_name: logstash
+#     image: logstash:7.6.1
+#     ports:
+#       - "5044:5044"
+#       - "9600:9600"
+#     depends_on:
+#       - kafka1
+#       - elasticsearch
+#     environment:
+#       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+#     networks:
+#       default:
+#     volumes:
+#       - ./logstash-kafka.conf:/usr/share/logstash/pipeline/logstash-kafka.conf
+#   kibana:
+#     container_name: kibana
+#     image: kibana:7.6.1
+#     ports:
+#       - "5601:5601"
+#     depends_on:
+#       - elasticsearch
+#     networks:
+#       default:
+#     volumes:
+#       - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+#   # filebeat:
+#   #   image: store/elastic/filebeat:7.6.1
+#   #   depends_on:
+#   #     - elasticsearch
+# networks:
+#   default:
+#     external:
+#       name: simple_api
