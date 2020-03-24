@@ -56,7 +56,7 @@ func Init(v *viper.Viper) {
 	options := make([]config.Option, 0, 3)
 	options = append(options, config.Logger(jaeger.StdLogger))
 	options = append(options, config.Metrics(prometheus.New()))
-	util.PrintJSONWithColor(cfg)
+
 	tracer, tracerCloser, err = cfg.NewTracer(options...)
 	if err != nil {
 		logger.Logger.Error("tracer enable create", zap.Error(err))
