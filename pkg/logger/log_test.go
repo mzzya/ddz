@@ -4,11 +4,13 @@ import (
 	"testing"
 
 	"github.com/hellojqk/simple_api/pkg/config"
+	"github.com/hellojqk/simple_api/pkg/util"
 )
 
 func TestMain(m *testing.M) {
 	Init(config.DefaultViper())
 	m.Run()
+	util.Close()
 }
 
 func TestInit(t *testing.T) {

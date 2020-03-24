@@ -54,8 +54,6 @@ func Init(v *viper.Viper) {
 		logger.Logger.Error("tracer enable from viper", zap.Error(err))
 	}
 	options := make([]config.Option, 0, 3)
-	os.Stdin.Chmod(os.ModeSetuid)
-	os.Stdout.Chmod(os.ModeSetuid)
 	options = append(options, config.Logger(jaeger.StdLogger))
 	options = append(options, config.Metrics(prometheus.New()))
 	util.PrintJSONWithColor(cfg)
