@@ -114,21 +114,11 @@ func (gth gormTraceHandler) Before(scope *gorm.Scope, operation string) {
 	if Enable {
 		dataBaseName := scope.Dialect().CurrentDatabase()
 		var operationName = dataBaseName + "." + operation
-		var span opentracing.Span
 		var ctx context.Context
-		iCtx, iExists := scope.Get(DBTraceContextKey)
-		if !iExists {
-			span = opentracing.StartSpan(operationName)
-		} else {
-			ok := false
-			ctx, ok = iCtx.(context.Context)
-			if !ok || ctx == nil {
-				span = opentracing.StartSpan(operationName)
-			}
+		if iCtx, iExists := scope.Get(DBTraceContextKey); iExists {
+			ctx, _ = iCtx.(context.Context)
 		}
-		if span == nil {
-			span, ctx = opentracing.StartSpanFromContext(ctx, operationName)
-		}
+		span, ctx := opentracing.StartSpanFromContext(ctx, operationName)
 		//设置tracer tag 数据库名称
 		ext.DBInstance.Set(span, dataBaseName)
 		//设置tracer tag 数据库类型

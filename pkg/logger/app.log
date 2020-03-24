@@ -1,5 +1,0 @@
-{"level":"debug","ts":"2020-03-23T22:34:39.310+0800","caller":"logger/log_test.go:15","msg":"Debug log"}
-{"level":"info","ts":"2020-03-23T22:34:39.313+0800","caller":"logger/log_test.go:16","msg":"Info log"}
-{"level":"warn","ts":"2020-03-23T22:34:39.314+0800","caller":"logger/log_test.go:17","msg":"Warn log"}
-{"level":"error","ts":"2020-03-23T22:34:39.314+0800","caller":"logger/log_test.go:18","msg":"Error log","stacktrace":"github.com/hellojqk/simple_api/pkg/logger.TestInit\n\tC:/simple_api/pkg/logger/log_test.go:18\ntesting.tRunner\n\tc:/go/src/testing/testing.go:992"}
-{"level":"dpanic","ts":"2020-03-23T22:34:39.316+0800","caller":"logger/log_test.go:19","msg":"DPanic log","stacktrace":"github.com/hellojqk/simple_api/pkg/logger.TestInit\n\tC:/simple_api/pkg/logger/log_test.go:19\ntesting.tRunner\n\tc:/go/src/testing/testing.go:992"}
