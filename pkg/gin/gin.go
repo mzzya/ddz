@@ -12,7 +12,7 @@ import (
 // Process 请求封装
 type Process interface {
 	New() Process
-	Extract(c gin.Context) (code.ResultCode, error)
+	Extract(c *gin.Context) (code.ResultCode, error)
 	Exec(ctx context.Context) interface{}
 }
 
@@ -29,17 +29,17 @@ func Init(convert func(c *gin.Context) (newCtx context.Context, err error)) {
 func Handler(process Process) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		req := process.New()
-		ctx, err := ctxGet(c)
+		ctx, err := ctxConvert(c)
 		if err != nil {
 			c.JSON(http.StatusOK, response.NewResponse(ctx, code.Default, err))
 			return
 		}
-		resultCode, err = req.Extract(c)
+		resultCode, err := req.Extract(c)
 		if err != nil {
 			c.JSON(http.StatusOK, response.NewResponse(ctx, resultCode, err))
 			return
 		}
-		data = req.Exec(ctx)
+		data := req.Exec(ctx)
 		c.JSON(http.StatusOK, data)
 	}
 }
