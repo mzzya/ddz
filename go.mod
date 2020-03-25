@@ -1,4 +1,4 @@
-module github.com/hellojqk/simple_api
+module github.com/hellojqk/simple
 
 go 1.14
 

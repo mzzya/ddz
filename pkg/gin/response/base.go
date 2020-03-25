@@ -3,7 +3,7 @@ package response
 import (
 	"context"
 
-	"github.com/hellojqk/simple_api/pkg/code"
+	"github.com/hellojqk/simple/pkg/code"
 )
 
 // Base 统一返回对象

@@ -4,8 +4,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/hellojqk/simple_api/pkg/logger"
-	"github.com/hellojqk/simple_api/pkg/util"
+	"github.com/hellojqk/simple/pkg/logger"
+	"github.com/hellojqk/simple/pkg/util"
 	"github.com/opentracing/opentracing-go"
 	"github.com/spf13/viper"
 	"github.com/uber/jaeger-client-go"

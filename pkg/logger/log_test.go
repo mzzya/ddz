@@ -3,8 +3,8 @@ package logger
 import (
 	"testing"
 
-	"github.com/hellojqk/simple_api/pkg/config"
-	"github.com/hellojqk/simple_api/pkg/util"
+	"github.com/hellojqk/simple/pkg/config"
+	"github.com/hellojqk/simple/pkg/util"
 )
 
 func TestMain(m *testing.M) {

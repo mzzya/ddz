@@ -3,9 +3,9 @@ package tracer
 import (
 	"testing"
 
-	"github.com/hellojqk/simple_api/pkg/config"
-	"github.com/hellojqk/simple_api/pkg/logger"
-	"github.com/hellojqk/simple_api/pkg/util"
+	"github.com/hellojqk/simple/pkg/config"
+	"github.com/hellojqk/simple/pkg/logger"
+	"github.com/hellojqk/simple/pkg/util"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/log"
 )

@@ -7,8 +7,8 @@ docker rm $(docker-compose ps -q)
 # 启动
 docker-compose up -d --remove-orphans
 
-#docker network create --subnet 172.88.88.0/24 simple_api
+#docker network create --subnet 172.88.88.0/24 simple
 # 测试kafka队列正常输出
 # docker exec -it kafka1 bash
-## /opt/kafka/bin/kafka-console-consumer.sh --topic simple_api --bootstrap-server kafka1:9092
-## kafka-topics.sh --describe --topic simple_api --zookeeper zookeeper:2181
+## /opt/kafka/bin/kafka-console-consumer.sh --topic simple --bootstrap-server kafka1:9092
+## kafka-topics.sh --describe --topic simple --zookeeper zookeeper:2181

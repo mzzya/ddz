@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/hellojqk/simple_api/pkg/config"
-	"github.com/hellojqk/simple_api/pkg/logger"
-	"github.com/hellojqk/simple_api/pkg/tracer"
-	"github.com/hellojqk/simple_api/pkg/util"
+	"github.com/hellojqk/simple/pkg/config"
+	"github.com/hellojqk/simple/pkg/logger"
+	"github.com/hellojqk/simple/pkg/tracer"
+	"github.com/hellojqk/simple/pkg/util"
 	"github.com/pkg/errors"
 	"go.uber.org/dig"
 )

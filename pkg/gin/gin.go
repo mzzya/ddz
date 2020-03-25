@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hellojqk/simple_api/pkg/code"
-	"github.com/hellojqk/simple_api/pkg/gin/response"
+	"github.com/hellojqk/simple/pkg/code"
+	"github.com/hellojqk/simple/pkg/gin/response"
 )
 
 // Process 请求封装
