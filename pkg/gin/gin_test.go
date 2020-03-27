@@ -8,13 +8,11 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hellojqk/simple/pkg/gin/request"
-	"github.com/hellojqk/simple/pkg/gin/response"
 	"gopkg.in/go-playground/assert.v1"
 )
 
 type TestResponse struct {
-	response.Base
+	BaseResponse
 }
 
 var requestPool = sync.Pool{
@@ -24,7 +22,7 @@ var requestPool = sync.Pool{
 }
 
 type TestRequest struct {
-	request.Base
+	BaseRequest
 }
 
 func (r *TestRequest) New() Process {
@@ -33,7 +31,7 @@ func (r *TestRequest) New() Process {
 }
 func (r *TestRequest) Exec(ctx context.Context) interface{} {
 	resp := TestResponse{}
-	resp.Base = response.NewSuccessResponse(ctx)
+	resp.BaseResponse = NewSuccessResponse(ctx)
 	// requestPool.Put(r)
 	return resp
 }
@@ -41,6 +39,7 @@ func (r *TestRequest) Exec(ctx context.Context) interface{} {
 var router *gin.Engine
 
 func TestMain(m *testing.M) {
+	Init(&NullConfig{})
 	router = gin.New()
 	router.Use(gin.Recovery())
 	router.GET("/", Handler(&TestRequest{}))
@@ -49,15 +48,15 @@ func TestMain(m *testing.M) {
 	})
 	router.GET("/2", func(c *gin.Context) {
 		c.ShouldBind(&TestRequest{})
-		response.NewSuccessResponse(context.Background())
+		NewSuccessResponse(context.Background())
 		c.Status(http.StatusOK)
 	})
 	router.GET("/3", func(c *gin.Context) {
-		c.JSON(http.StatusOK, response.Base{})
+		c.JSON(http.StatusOK, BaseResponse{})
 	})
 	router.GET("/4", func(c *gin.Context) {
 		c.ShouldBind(&TestRequest{})
-		resp := TestResponse{Base: response.NewSuccessResponse(context.Background())}
+		resp := TestResponse{BaseResponse: NewSuccessResponse(context.Background())}
 		c.JSON(http.StatusOK, resp)
 	})
 	m.Run()
