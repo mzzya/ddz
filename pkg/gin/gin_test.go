@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -16,16 +17,24 @@ type TestResponse struct {
 	response.Base
 }
 
+var requestPool = sync.Pool{
+	New: func() interface{} {
+		return &TestRequest{}
+	},
+}
+
 type TestRequest struct {
 	request.Base
 }
 
 func (r *TestRequest) New() Process {
-	return r
+	return &TestRequest{}
+	// return requestPool.Get().(*TestRequest)
 }
 func (r *TestRequest) Exec(ctx context.Context) interface{} {
 	resp := TestResponse{}
 	resp.Base = response.NewSuccessResponse(ctx)
+	// requestPool.Put(r)
 	return resp
 }
 
@@ -39,6 +48,7 @@ func TestMain(m *testing.M) {
 		c.Status(http.StatusOK)
 	})
 	router.GET("/2", func(c *gin.Context) {
+		c.ShouldBind(&TestRequest{})
 		response.NewSuccessResponse(context.Background())
 		c.Status(http.StatusOK)
 	})
@@ -46,6 +56,7 @@ func TestMain(m *testing.M) {
 		c.JSON(http.StatusOK, response.Base{})
 	})
 	router.GET("/4", func(c *gin.Context) {
+		c.ShouldBind(&TestRequest{})
 		resp := TestResponse{Base: response.NewSuccessResponse(context.Background())}
 		c.JSON(http.StatusOK, resp)
 	})
