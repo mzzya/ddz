@@ -1,10 +1,10 @@
-package gin
+package ginext
 
 import (
 	"context"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hellojqk/simple/pkg/code"
+	"github.com/hellojqk/simple/pkg/util"
 )
 
 // Config 配置
@@ -15,7 +15,7 @@ type Config interface {
 	//ContextConvert gin.Context转换为ctx方法，主要作用 可解析用户信息并向下透传给日志组件等记录用户信息
 	ContextConvert(c *gin.Context) (newCtx context.Context, err error)
 	//ExtractAuthorization 提取授权信息 jwt,token等
-	ExtractAuthorization(c *gin.Context) (authorizationInfo interface{},code APICode, err error)
+	ExtractAuthorization(c *gin.Context) (authorizationInfo interface{}, code util.ResultCode, err error)
 }
 
 var conf Config
@@ -26,15 +26,19 @@ func Init(c Config) {
 }
 
 // NullConfig .
-type NullConfig struct{
-
+type NullConfig struct {
 }
+
 // ResultInfo .
-func (n *NullConfig)ResultInfo(util.ResultCode) string{
+func (n *NullConfig) ResultInfo(util.ResultCode) string {
 	return ""
 }
 
 // ContextConvert .
-func (n *NullConfig)ContextConvert(c *gin.Context) (newCtx context.Context, err error){
-	return context.Background(),nil
+func (n *NullConfig) ContextConvert(c *gin.Context) (newCtx context.Context, err error) {
+	return context.Background(), nil
+}
+
+func (n *NullConfig) ExtractAuthorization(c *gin.Context) (authorizationInfo interface{}, code util.ResultCode, err error) {
+	return
 }

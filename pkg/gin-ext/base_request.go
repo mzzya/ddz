@@ -1,4 +1,4 @@
-package gin
+package ginext
 
 import (
 	"github.com/gin-gonic/gin"
@@ -15,7 +15,7 @@ func (b *BaseRequest) Extract(c *gin.Context) (util.ResultCode, error) {
 }
 
 //DefaultExtract 默认提取方法
-func (b *BaseRequest) DefaultExtract(data interface{}, c *gin.Context) (co util.ResultCode, err error) {
+func (b *BaseRequest) DefaultExtract(data interface{}, c *gin.Context) (code util.ResultCode, err error) {
 	return b.ExtractWithBindFunc(data, c.ShouldBind)
 }
 

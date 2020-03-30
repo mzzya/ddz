@@ -1,4 +1,4 @@
-package gin
+package ginext
 
 import (
 	"github.com/gin-gonic/gin"
@@ -12,6 +12,6 @@ type BaseAuthRequest struct {
 }
 
 //Extract 参数提取
-func (b *BaseRequest) Extract(c *gin.Context) (util.ResultCode, error) {
+func (b *BaseAuthRequest) Extract(c *gin.Context) (util.ResultCode, error) {
 	return b.DefaultExtract(b, c)
 }

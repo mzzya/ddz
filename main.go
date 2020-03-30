@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/hellojqk/simple/inertnal/router"
 	"github.com/hellojqk/simple/pkg/config"
+	ginext "github.com/hellojqk/simple/pkg/gin-ext"
 	"github.com/hellojqk/simple/pkg/logger"
 	"github.com/hellojqk/simple/pkg/tracer"
 	"github.com/hellojqk/simple/pkg/util"
@@ -40,6 +43,7 @@ func Close() {
 
 func main() {
 	logger.Logger.Info("app start")
+	ginext.MergeStart(":8080", time.Minute, router.NewRouter())
 	Close()
 	logger.Logger.Info("app stop")
 }
