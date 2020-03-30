@@ -1,5 +1,10 @@
 version: "3"
 services:
+  redis:
+    container_name: redis
+    image: redis:5.0.8
+    ports:
+      - "6379:6379"
   jaeger:
     container_name: jaeger
     image: jaegertracing/all-in-one:1.17.0

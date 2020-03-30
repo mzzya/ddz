@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hellojqk/simple/pkg/code"
+	"github.com/hellojqk/simple/pkg/util"
 )
 
 // Process 请求封装
 type Process interface {
 	New() Process
-	Extract(c *gin.Context) (code.ResultCode, error)
+	Extract(c *gin.Context) (util.ResultCode, error)
 	Exec(ctx context.Context) interface{}
 }
 
@@ -21,7 +21,7 @@ func Handler(process Process) gin.HandlerFunc {
 		req := process.New()
 		ctx, err := conf.ContextConvert(c)
 		if err != nil {
-			c.JSON(http.StatusOK, NewResponse(ctx, code.Default, err))
+			c.JSON(http.StatusOK, NewResponse(ctx, util.Default, err))
 			return
 		}
 		resultCode, err := req.Extract(c)

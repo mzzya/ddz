@@ -32,7 +32,7 @@ func DoAfter(span opentracing.Span, resp *http.Response, err error) {
 	if !Enable {
 		return
 	}
-	ext.HTTPStatusCode.Set(span, uint16(resp.StatusCode))
+	ext.HTTPStatusutil.Set(span, uint16(resp.StatusCode))
 	if err != nil {
 		span.LogFields(log.Error(err))
 	}

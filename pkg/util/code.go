@@ -1,4 +1,4 @@
-package code
+package util
 
 // ResultCode 结果码
 type ResultCode string
