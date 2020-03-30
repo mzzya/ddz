@@ -2,12 +2,19 @@ package ginext
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"sync"
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hellojqk/simple/pkg/config"
+	"github.com/hellojqk/simple/pkg/logger"
+	"github.com/hellojqk/simple/pkg/tracer"
+	"github.com/hellojqk/simple/pkg/util"
+	"github.com/pkg/errors"
+	"go.uber.org/dig"
 	"gopkg.in/go-playground/assert.v1"
 )
 
@@ -38,11 +45,29 @@ func (r *TestRequest) Exec(ctx context.Context) interface{} {
 
 var router *gin.Engine
 
+// DI 依赖注入
+func DI() {
+	c := dig.New()
+	var err error
+	if err = c.Provide(config.DefaultViper); err != nil {
+		fmt.Print(errors.WithMessage(err, "Provide DefaultViper"))
+	}
+	err = c.Invoke(logger.Init)
+	if err != nil {
+		fmt.Print(errors.WithMessage(err, "Invoke"))
+	}
+	err = c.Invoke(tracer.Init)
+	if err != nil {
+		fmt.Print(errors.WithMessage(err, "Invoke"))
+	}
+}
 func TestMain(m *testing.M) {
+	DI()
 	Init(&NullConfig{})
 	router = gin.New()
-	router.Use(gin.Recovery())
-	router.GET("/", Handler(&TestRequest{}))
+	gin.SetMode(gin.ReleaseMode)
+	router.Use(CORS(), Recovery(), Logger())
+	router.GET("/test", Handler(&TestRequest{}))
 	router.GET("/1", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
@@ -60,11 +85,12 @@ func TestMain(m *testing.M) {
 		c.JSON(http.StatusOK, resp)
 	})
 	m.Run()
+	util.Close()
 }
 
 func TestGin(t *testing.T) {
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequest("GET", "/test?a=b", nil)
 	router.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 	assert.NotEqual(t, "", w.Body.String())
@@ -75,7 +101,7 @@ func TestGin(t *testing.T) {
 func BenchmarkGin(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/", nil)
+		req, _ := http.NewRequest("GET", "/test", nil)
 		router.ServeHTTP(w, req)
 	}
 }

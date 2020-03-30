@@ -23,16 +23,16 @@ func GinHandler() gin.HandlerFunc {
 	}
 }
 
-// InjectSpanToGinContext .
+// InjectSpanToGinContext 将span写入ginContext
 func InjectSpanToGinContext(c *gin.Context, span opentracing.Span) {
-	if !Enable {
+	if !Enable || span == nil {
 		return
 	}
 	c.Set(TraceGinSpanKey, span)
 	return
 }
 
-// ExtractSpanFromGinContext .
+// ExtractSpanFromGinContext 从ginContext提取span信息
 func ExtractSpanFromGinContext(c *gin.Context) (span opentracing.Span, err error) {
 	if !Enable {
 		return
@@ -48,7 +48,7 @@ func ExtractSpanFromGinContext(c *gin.Context) (span opentracing.Span, err error
 	return span, nil
 }
 
-// GinContextConvert .
+// GinContextConvert ginContext转换成ctx
 func GinContextConvert(ctx context.Context, c *gin.Context) (newCtx context.Context, err error) {
 	span, err := ExtractSpanFromGinContext(c)
 	if err != nil {

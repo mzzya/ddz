@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hellojqk/simple/pkg/tracer"
 	"github.com/hellojqk/simple/pkg/util"
 )
 
@@ -36,9 +37,10 @@ func (n *NullConfig) ResultInfo(util.ResultCode) string {
 
 // ContextConvert .
 func (n *NullConfig) ContextConvert(c *gin.Context) (newCtx context.Context, err error) {
-	return context.Background(), nil
+	return tracer.GinContextConvert(context.Background(), c)
 }
 
+// ExtractAuthorization .
 func (n *NullConfig) ExtractAuthorization(c *gin.Context) (authorizationInfo interface{}, code util.ResultCode, err error) {
 	return
 }

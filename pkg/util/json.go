@@ -9,6 +9,9 @@ import (
 
 // JSON 屏蔽错误返回json字节
 func JSON(data interface{}) []byte {
+	if data == nil {
+		return nil
+	}
 	bts, err := json.Marshal(data)
 	if err != nil {
 		panic(err)

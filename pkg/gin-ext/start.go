@@ -101,6 +101,7 @@ func MergeStartWithRouterCount(addr string, closeWaitTime time.Duration, routers
 		if router.Method == "" {
 			break
 		}
+		fmt.Printf("%s\t%s\t%s\n", router.Method, router.Path, router.Handler)
 		engine.Handle(router.Method, router.Path, router.HandlerFunc)
 	}
 	Start(addr, closeWaitTime, engine)
