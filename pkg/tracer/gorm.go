@@ -16,23 +16,23 @@ const (
 	DBTraceSpanKey = "trace.db.span"
 )
 
-//GormTraceHandler opentracing处理gorm接口
-type GormTraceHandler interface {
-	CreateBefore(scope *gorm.Scope)
-	CreateAfter(scope *gorm.Scope)
-	QueryBefore(scope *gorm.Scope)
-	QueryAfter(scope *gorm.Scope)
-	RowQueryBefore(scope *gorm.Scope)
-	RowQueryAfter(scope *gorm.Scope)
-	UpdateBefore(scope *gorm.Scope)
-	UpdateAfter(scope *gorm.Scope)
-	DeleteBefore(scope *gorm.Scope)
-	DeleteAfter(scope *gorm.Scope)
-	RegisterDB(db *gorm.DB)
-}
+// //GormTraceHandler opentracing处理gorm接口
+// type GormTraceHandler interface {
+// 	CreateBefore(scope *gorm.Scope)
+// 	CreateAfter(scope *gorm.Scope)
+// 	QueryBefore(scope *gorm.Scope)
+// 	QueryAfter(scope *gorm.Scope)
+// 	RowQueryBefore(scope *gorm.Scope)
+// 	RowQueryAfter(scope *gorm.Scope)
+// 	UpdateBefore(scope *gorm.Scope)
+// 	UpdateAfter(scope *gorm.Scope)
+// 	DeleteBefore(scope *gorm.Scope)
+// 	DeleteAfter(scope *gorm.Scope)
+// 	RegisterDB(db *gorm.DB)
+// }
 
-//gormTraceHandler opentracing默认处理gorm方法
-type gormTraceHandler struct {
+//gormHook opentracing默认处理gorm方法
+type gormHook struct {
 }
 
 // RegisterDB .
@@ -41,7 +41,7 @@ func RegisterDB(db *gorm.DB) {
 	if !Enable {
 		return
 	}
-	gth := gormTraceHandler{}
+	gth := gormHook{}
 	//注册gorm操作数据库前后 trace事件
 	db.Callback().Create().Before("gorm:create").Register("trace_plugin:before_create", gth.CreateBefore)
 	db.Callback().Create().After("gorm:create").Register("trace_plugin:after_create", gth.CreateAfter)
@@ -60,57 +60,57 @@ func RegisterDB(db *gorm.DB) {
 }
 
 //CreateBefore gorm before 处理
-func (gth gormTraceHandler) CreateBefore(scope *gorm.Scope) {
+func (gth gormHook) CreateBefore(scope *gorm.Scope) {
 	gth.Before(scope, "create")
 }
 
 //CreateAfter gorm after 处理
-func (gth gormTraceHandler) CreateAfter(scope *gorm.Scope) {
+func (gth gormHook) CreateAfter(scope *gorm.Scope) {
 	gth.After(scope, "create")
 }
 
 //QueryBefore gorm before 处理
-func (gth gormTraceHandler) QueryBefore(scope *gorm.Scope) {
+func (gth gormHook) QueryBefore(scope *gorm.Scope) {
 	gth.Before(scope, "query")
 }
 
 //QueryAfter gorm after 处理
-func (gth gormTraceHandler) QueryAfter(scope *gorm.Scope) {
+func (gth gormHook) QueryAfter(scope *gorm.Scope) {
 	gth.After(scope, "query")
 }
 
 //RowQueryBefore gorm before 处理
-func (gth gormTraceHandler) RowQueryBefore(scope *gorm.Scope) {
+func (gth gormHook) RowQueryBefore(scope *gorm.Scope) {
 	gth.Before(scope, "row_query")
 }
 
 //RowQueryAfter gorm after 处理
-func (gth gormTraceHandler) RowQueryAfter(scope *gorm.Scope) {
+func (gth gormHook) RowQueryAfter(scope *gorm.Scope) {
 	gth.After(scope, "row_query")
 }
 
 //UpdateBefore gorm before 处理
-func (gth gormTraceHandler) UpdateBefore(scope *gorm.Scope) {
+func (gth gormHook) UpdateBefore(scope *gorm.Scope) {
 	gth.Before(scope, "update")
 }
 
 //UpdateAfter gorm after 处理
-func (gth gormTraceHandler) UpdateAfter(scope *gorm.Scope) {
+func (gth gormHook) UpdateAfter(scope *gorm.Scope) {
 	gth.After(scope, "update")
 }
 
 //DeleteBefore gorm before 处理
-func (gth gormTraceHandler) DeleteBefore(scope *gorm.Scope) {
+func (gth gormHook) DeleteBefore(scope *gorm.Scope) {
 	gth.Before(scope, "delete")
 }
 
 //DeleteAfter gorm after 处理
-func (gth gormTraceHandler) DeleteAfter(scope *gorm.Scope) {
+func (gth gormHook) DeleteAfter(scope *gorm.Scope) {
 	gth.After(scope, "delete")
 }
 
 //Before opentracing通用的在sql执行前处理
-func (gth gormTraceHandler) Before(scope *gorm.Scope, operation string) {
+func (gth gormHook) Before(scope *gorm.Scope, operation string) {
 	if Enable {
 		dataBaseName := scope.Dialect().CurrentDatabase()
 		var operationName = dataBaseName + "." + operation
@@ -132,7 +132,7 @@ func (gth gormTraceHandler) Before(scope *gorm.Scope, operation string) {
 var DBStatement = string(ext.DBStatement)
 
 //After opentracing通用的在sql执行后处理
-func (gth gormTraceHandler) After(scope *gorm.Scope, operation string) {
+func (gth gormHook) After(scope *gorm.Scope, operation string) {
 	if Enable {
 		iSpan, iExists := scope.Get(DBTraceSpanKey)
 		if !iExists {
