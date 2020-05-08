@@ -27,15 +27,14 @@ func NewRedisHook(config RedisHookConfig) redis.Hook {
 
 // BeforeProcess .
 func (r *redisHook) BeforeProcess(ctx context.Context, cmd redis.Cmder) (context.Context, error) {
-	span, newCtx := opentracing.StartSpanFromContext(ctx, r.config.Name)
+	span, newCtx := opentracing.StartSpanFromContext(ctx, fmt.Sprintf("%s:%s", r.config.Name, cmd.Name()))
 	if span == nil {
 		span = opentracing.StartSpan(cmd.Name())
 		newCtx = opentracing.ContextWithSpan(ctx, span)
 	}
 	ext.DBType.Set(span, r.dbType)
-	ext.DBInstance.Set(span, cmd.Name())
-	fmt.Printf("%v", cmd.Args())
-	ext.DBStatement.Set(span, cmd.Name())
+	ext.DBInstance.Set(span, r.config.Name)
+	ext.DBStatement.Set(span, cmd.String())
 	return newCtx, nil
 }
 
@@ -46,7 +45,7 @@ func (r *redisHook) AfterProcess(ctx context.Context, cmd redis.Cmder) error {
 		return nil
 	}
 	err := cmd.Err()
-	if err != nil && err != redis.Nil {
+	if err != nil {
 		ext.Error.Set(span, true)
 		span.LogFields(log.Error(err))
 	}
@@ -58,4 +57,28 @@ func (r *redisHook) BeforeProcessPipeline(ctx context.Context, cmds []redis.Cmde
 }
 func (r *redisHook) AfterProcessPipeline(ctx context.Context, cmds []redis.Cmder) error {
 	return nil
+}
+
+// NewTracerRedisClient .
+func NewTracerRedisClient(ctx context.Context, cli *redis.Client) *redis.Client {
+	if !Enable {
+		return cli
+	}
+	return cli.WithContext(ctx)
+}
+
+// NewTracerRedisClusterClient .
+func NewTracerRedisClusterClient(ctx context.Context, cli *redis.ClusterClient) *redis.ClusterClient {
+	if !Enable {
+		return cli
+	}
+	return cli.WithContext(ctx)
+}
+
+// NewTracerRedisSentinelClient .
+func NewTracerRedisSentinelClient(ctx context.Context, cli *redis.SentinelClient) *redis.SentinelClient {
+	if !Enable {
+		return cli
+	}
+	return cli.WithContext(ctx)
 }

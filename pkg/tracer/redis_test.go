@@ -2,6 +2,7 @@ package tracer
 
 import (
 	"testing"
+	"time"
 
 	"github.com/go-redis/redis/v7"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +24,9 @@ func Test_redisHook_BeforeProcess(t *testing.T) {
 	initTestRedis()
 	hook := NewRedisHook(RedisHookConfig{Name: "test_redis"})
 	redisCli.AddHook(hook)
-	res, err := redisCli.Info().Result()
+	_, err := redisCli.Info().Result()
+	redisCli.Set("a", 99999, time.Minute).Result()
+	redisCli.Get("a").Result()
+	redisCli.Get("b").Result()
 	assert.Equal(t, nil, err)
-	t.Logf("Info Result:%s", res)
 }
